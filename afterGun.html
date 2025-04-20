@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Процес</title>
+</head>
+<body>
+  <h3>Ви обрали:</h3>
+  <p id="displayValue">Очікуйте...</p>
+
+  <form>
+    <h2>ШВИДКІСТЬ ЦІЛІ (м/с):</h2>
+    <select id="speedInput">
+      <option value="50">50</option>
+      <option value="55">55</option>
+      <option value="60">60</option>
+      <option value="65">65</option>
+      <option value="70">70</option>
+      <option value="75">75</option>
+    </select>
+    <!-- <br>
+    <h4>ШВИДКІСТЬ ВРУЧНУ (м/с):</h4>
+    <input type="number" id="speedInputMPS" placeholder="0" value="-1"/>
+    <h4>ШВИДКІСТЬ ВРУЧНУ (км/год):</h4>
+    <input type="number" id="speedInputKMPH" placeholder="0" value="-1"/> -->
+
+    <h2>РАКУРС:</h2>
+    <select id="rakursInput">
+      <option value="4/4">4/4</option>
+      <option value="0/4">0/4</option>
+      <option value="1/4">1/4</option>
+      <option value="2/4">2/4</option>
+      <option value="3/4">3/4</option>
+    </select>
+    <h4>РАКУРС ВРУЧНУ БЕЗ /4:</h4>
+    <input type="number" id="rakursCustomInput" placeholder="0" value="-1"/>
+    <h4>КУТ ВРУЧНУ (градуси):</h4>
+    <input type="number" id="angleInput" placeholder="0" value="-1"/>
+
+    <h4>РОЗМІР ЦІЛІ НА ПРИЦІЛІ В ТИСЯЧНИХ:</h4>
+    <input type="number" id="sizeInDotsInput" placeholder="0" value="-1"/>
+
+    <br><br>
+    <button type="button" id="calculateBtn">ОБЧИСЛИТИ</button>
+    <br><br>
+    <button type="button" id="backToGunsBtn">ОБРАТИ ЗБРОЮ</button>
+  </form>
+  <script>
+    const selectedValue = localStorage.getItem('selectedGun');
+    document.getElementById('displayValue').textContent = selectedValue || 'No value found.';
+
+    document.getElementById('calculateBtn').addEventListener('click', (event) => {
+      event.preventDefault();
+      const speedVal = document.getElementById('speedInput').value;
+      const speedValMPS = document.getElementById('speedInputMPS').value;
+      const speedValKMPS = document.getElementById('speedInputKMPH').value;
+      const rakursVal = document.getElementById('rakursInput').value;
+      const rakursCustomVal = document.getElementById('rakursCustomInput').value;
+      const angleVal = document.getElementById('angleInput').value;
+      const sizeInDotsVal = document.getElementById('sizeInDotsInput').value;
+
+      localStorage.setItem('speedVal', speedVal);
+      localStorage.setItem('speedValMPS', speedValMPS);
+      localStorage.setItem('speedValKMPS', speedValKMPS);
+      localStorage.setItem('rakursVal', rakursVal);
+      localStorage.setItem('rakursCustomVal', rakursCustomVal);
+      localStorage.setItem('angleVal', angleVal);
+      localStorage.setItem('sizeInDotsVal', sizeInDotsVal);
+
+      window.location.href = 'calculated2.html';
+    });
+
+    document.getElementById('backToGunsBtn').addEventListener('click', (event) => {
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

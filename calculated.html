@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Процес</title>
+</head>
+<body>
+  <h3>Ви обрали:</h3>
+  <p>Рaкурс:</p>
+  <p id="displayRakursValue">Очікуйте...</p>
+  <p>Відстань в метрах:</p>
+  <p id="displayDistanceValue">Очікуйте...</p>
+  <p>Час до цілі:</p>
+  <p id="displayTTTValue">Очікуйте...</p>
+  <p>ЗМІЩЕННЯ В МЕТРАХ:</p>
+  <p id="displayShiftValue">Очікуйте...</p>
+  <p>ВИПЕРЕДЖЕННЯ В САНТИМЕТРАХ:</p>
+  <p id="displayFixValue">Очікуйте...</p>
+
+<!--
+  <script>
+    var trueRakurs = Number(localStorage.getItem('rakursVal').slice(0, -2));
+    trueRakurs = localStorage.getItem('rakursCustomVal')!=""?localStorage.getItem('rakursCustomVal')+"/4":trueRakurs;
+
+    angleSin = Number(localStorage.getItem('rakursVal').slice(0, -2))/4;
+    if(localStorage.getItem('rakursCustomVal')!="") {
+        angleSin = Number(localStorage.getItem('rakursCustomVal'))/4;
+    }
+    if(localStorage.getItem('angleVal')!=""){
+        angleSin = Math.sin(Number(localStorage.getItem('angleVal'))/180*Math.PI);
+    }
+
+    localStorage.setItem('angleSin', angleSin);
+
+    trueRakurs = localStorage.getItem('angleVal')!=""?angleSin.toFixed(3)*4+"/4":trueRakurs;
+
+    var trueDistance = 3.5 * 1000 / localStorage.getItem('sizeInDots') * angleSin;
+
+    document.getElementById('displayRakursValue').textContent = trueRakurs;
+    document.getElementById('displayDistanceValue').textContent = trueDistance.toFixed(1);
+
+    function timeToTarget(gun, distance) {
+        if(gun == "ak74") {
+            return trueDistance/900+trueDistance*trueDistance/(2*900*900*0.326*0.057)*0.033;
+        }
+    }
+
+    currTTT = timeToTarget(localStorage.getItem('selectedGun'), trueDistance);
+
+    document.getElementById('displayTTTValue').textContent = currTTT;
+    document.getElementById('displayShiftValue').textContent = currTTT*Number(localStorage.getItem('speedVal'));
+    document.getElementById('displayFixValue').textContent = currTTT*Number(localStorage.getItem('speedVal'))*0.66/trueDistance*100;
+  </script>
+-->
+
+  <script>
+    const realSize = 3.5;
+    var airDensity = 1.225;
+    var muzzleSpeed;
+    var ballisticCoef;
+    var caliber;
+    var mass;
+    var g1 = -1;
+    var g7 = -1;
+
+    switch(localStorage.getItem('selectedGun')) {
+      case 'AK-74':
+        muzzleSpeed = 900;
+        ballisticCoef = 0.326;
+        caliber = 0.00545;
+        mass = 0.0042;
+        break;
+      case 'Browning':
+        muzzleSpeed = 860;
+        g1 = 1.05; 
+        caliber = 0.0127;
+        mass = 0.0496;
+        break;
+    }
+
+    speed = Number(localStorage.getItem('speedVal'));
+/* if(localStorage.getItem('speedValMPS')!='') {
+      speed = Number(localStorage.getItem('speedValMPS'));
+    }
+    if(localStorage.getItem('speedValKMPH')!='') {
+      speed = Number(localStorage.getItem('speedValKMPH'))/3.6;
+    }
+*/
+    angleSin = Number(localStorage.getItem('rakursVal').slice(0, -2))/4;
+/*    if(localStorage.getItem('rakursCustomVar'!="")) {
+      angleSin = Math.sin(Number(localStorage.getItem('rakursCustomVal'))/4*Math.PI/180);
+    }
+    if(localStorage.getItem('angleVal')!="") {
+      angleSin = Math.sin(Number(localStorage.getItem('angleVal'))*Math.PI/180);
+    } */
+    
+    document.getElementById('displayRakursValue').textContent = angleSin;
+    
+    observedSize = Number(localStorage.getItem('sizeInDotsVal'));
+
+    distance = angleSin*realSize*1000/observedSize;
+
+    document.getElementById('displayDistanceValue').textContent = distance;
+
+    crosssection = Math.PI*caliber**2;
+    k = 1/2 * airDensity * ballisticCoef * crosssection / mass;
+    
+    timeToTarget = (Math.exp(k * distance) - 1) / (k * muzzleSpeed);
+
+    document.getElementById('displayTTTValue').textContent = timeToTarget;
+
+    meterShift = speed * timeToTarget * angleSin;
+    document.getElementById('displayShiftValue').textContent = meterShift;
+
+    aimShift = meterShift / distance;
+
+    document.getElementById('displayFixValue').textContent = aimShift;
+  </script>
+</body>
+</html>

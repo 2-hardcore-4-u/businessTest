@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <title>Калькулятор</title>
+</head>
+    <body>
+        <form action="">
+            <h1>ТИП ЗБРОЇ:</h1>
+            <select id="guns">
+              <option value="AK-74">АК-74</option>
+              <option value="Browning">Браунінг</option>
+            </select>
+            <button type="button" id="submitBtn">Обрати</button>
+            <button onclick="go()">Go</button>
+          </form>
+
+          <p>На наступній сторінці для кожного блоку введіть значення лише в один з форматів!</p>
+          
+          <script>
+            document.getElementById('submitBtn').addEventListener('click', (event) => {
+              event.preventDefault();
+              const selectedValue = document.getElementById('guns').value;
+              localStorage.setItem('selectedGun', selectedValue);
+              document.location.href = 'afterGun.html';
+            });
+          </script>
+    </body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Процес</title>
+</head>
+<body>
+  <h3>Ви обрали:</h3>
+  <p>Рaкурс:</p>
+  <p id="displayRakursValue">Очікуйте...</p>
+  <p>Відстань в метрах:</p>
+  <p id="displayDistanceValue">Очікуйте...</p>
+  <p>Час до цілі:</p>
+  <p id="displayTTTValue">Очікуйте...</p>
+  <p>ЗМІЩЕННЯ В МЕТРАХ:</p>
+  <p id="displayShiftValue">Очікуйте...</p>
+  <p>ВИПЕРЕДЖЕННЯ В ТИСЯЧНИХ:</p>
+  <p id="displayFixValue">Очікуйте...</p>
+
+  <script>
+    function timeToTargetMetric({
+      velocity_mps,     // Muzzle velocity in meters per second
+      bc_g1,            // Ballistic coefficient (G1)
+      mass_grams,       // Bullet mass in grams
+      caliber_mm,       // Caliber in millimeters (not used directly)
+      distance_m,       // Distance to target in meters
+      koef   //mine
+    }) {
+      const deltaX = 0.001; // Step size in meters
+      const maxSteps = 1000000;
+    
+      let velocity = velocity_mps;
+      let position = 0;
+      let time = 0;
+    
+      // Simplified G1 drag approximation for metric units
+      function g1DragDeceleration(v) {
+        // Approximate drag force = k * v^2, adjust by BC
+        // k is empirical and simplified here
+        const k = koef / bc_g1; // tuned for metric units
+        return k * v * v;
+      }
+    
+      for (let i = 0; i < maxSteps && position < distance_m; i++) {
+        let accel = -g1DragDeceleration(velocity);  // m/s²
+        let deltaT = deltaX / velocity;             // s
+        time += deltaT;
+        velocity += accel * deltaT;
+        if (velocity <= 0) break;                   // bullet stopped in air
+        position += deltaX;
+      }
+    
+      return time.toFixed(3); // time in seconds
+    }
+    
+    
+    
+    const realSize = 3.5;
+    var airDensity = 1.225;
+    var muzzleSpeed;
+    var ballisticCoef;
+    var caliber;
+    var mass;
+    var g1 = -1;
+    var g7 = -1;
+    var kcoef;
+
+    switch(localStorage.getItem('selectedGun')) {
+      case 'AK-74':
+        muzzleSpeed = 900;
+        g1 = 0.351; 
+        caliber = 5.45;
+        mass = 4.2;
+        kcoef = 0.00047;
+        break;
+      case 'Browning':
+        muzzleSpeed = 860;
+        g1 = 1.05; 
+        caliber = 12.7;
+        mass = 49.6;
+        kcoef = 0.00068;
+        break;
+    }
+
+    speed = Number(localStorage.getItem('speedVal'));
+    /* if(localStorage.getItem('speedValMPS')!=-1) {
+      speed = Number(localStorage.getItem('speedValMPS'));
+    }
+    if(localStorage.getItem('speedValKMPH')!=-1) {
+      speed = Number(localStorage.getItem('speedValKMPH'))/3.6;
+    } */
+
+    angleSin = Number(localStorage.getItem('rakursVal').slice(0, -2))/4;
+    if(localStorage.getItem('rakursCustomVar'!="-1")) {
+      angleSin = Math.sin(Number(localStorage.getItem('rakursCustomVal'))/4*Math.PI/180);
+    }
+    if(localStorage.getItem('angleVal')!="-1") {
+      angleSin = Math.sin(Number(localStorage.getItem('angleVal'))*Math.PI/180);
+    } 
+
+    console.log(angleSin);
+    
+    document.getElementById('displayRakursValue').textContent = angleSin;
+    
+    observedSize = Number(localStorage.getItem('sizeInDotsVal'));
+
+    distance = angleSin*realSize*1000/observedSize;
+    document.getElementById('displayDistanceValue').textContent = distance;
+    
+    timeToTarget = timeToTargetMetric({velocity_mps: muzzleSpeed,     // Muzzle velocity in meters per second
+      bc_g1: g1,            // Ballistic coefficient (G1)
+      mass_grams: mass,       // Bullet mass in grams
+      caliber_mm: caliber,       // Caliber in millimeters (not used directly)
+      distance_m: distance,
+      koef: kcoef     });
+    document.getElementById('displayTTTValue').textContent = timeToTarget;
+
+    meterShift = speed * timeToTarget * angleSin;
+    console.log(speed+" "+timeToTarget+" "+angleSin)
+    document.getElementById('displayShiftValue').textContent = meterShift;
+
+    aimShift = meterShift / distance * 1000;
+    document.getElementById('displayFixValue').textContent = aimShift;
+  </script>
+</body>
+</html>
