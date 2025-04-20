@@ -16,6 +16,8 @@
   <p id="displayShiftValue">Очікуйте...</p>
   <p>ВИПЕРЕДЖЕННЯ В ТИСЯЧНИХ:</p>
   <p id="displayFixValue">Очікуйте...</p>
+  <br><br>
+  <button type="button" id="calculateBtn">ЗАНОВО</button>
 
   <script>
     function timeToTargetMetric({
@@ -121,6 +123,10 @@
 
     aimShift = meterShift / distance * 1000;
     document.getElementById('displayFixValue').textContent = aimShift;
+
+    document.getElementById('calculateBtn').addEventListener('click', (event) => {
+      document.location.href = 'afterGun.html';
+    });
   </script>
 </body>
 </html>
